@@ -18,6 +18,7 @@ class Rooms extends Component {
    
     this.userID = navigation.getParam("id");
     this.currentUser = navigation.getParam("currentUser");
+    this.auth0 = navigation.getParam("auth0");
 
     const rooms = this.currentUser.rooms.map(({ id, name }) => {
       return {
@@ -52,7 +53,7 @@ class Rooms extends Component {
   renderRoom = ({ item }) => {
     return (
       <View style={styles.listItem}>
-        <Text style={styles.list_item_text}>{item.name}</Text>
+        <Text style={styles.listItemText}>{item.name}</Text>
         <Button title="Enter" color="#0064e1" onPress={() => {
           this.enterChat(item);
         }} />
@@ -67,7 +68,8 @@ class Rooms extends Component {
       userID: this.userID,
       currentUser: this.currentUser,
       roomID: room.id,
-      roomName: room.name
+      roomName: room.name,
+      auth0: this.auth0
     });
   }
 
@@ -88,5 +90,9 @@ const styles = {
     padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+  },
+  listItemText: {
+    marginLeft: 10,
+    fontSize: 20,
   }
 };

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import { View, ActivityIndicator } from "react-native";
-import { GiftedChat } from "react-native-gifted-chat";
+import { ActivityIndicator, View, TouchableOpacity, Text, Alert } from "react-native";
+import { GiftedChat, Message } from "react-native-gifted-chat";
+import { StackActions, NavigationActions } from "react-navigation";
+import SInfo from "react-native-sensitive-info";
 
 class Chat extends Component {
 
@@ -13,7 +15,16 @@ class Chat extends Component {
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
     return {
-      headerTitle: params.roomName
+      headerTitle: params.roomName,
+      headerRight: (
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.headerButtonContainer} onPress={params.logoutUser}>
+            <View>
+              <Text>Logout</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      )
     };
   }
   //
@@ -23,9 +34,11 @@ class Chat extends Component {
     const { navigation } = this.props;
 
     this.userID = navigation.getParam("userID");
-    this.currentUser = navigation.getParam("currentUser");
     this.roomID = navigation.getParam("roomID");
     this.roomName = navigation.getParam("roomName");
+    
+    this.currentUser = navigation.getParam("currentUser");
+    this.auth0 = navigation.getParam("auth0");
   }
 
 
@@ -35,6 +48,10 @@ class Chat extends Component {
 
 
   async componentDidMount() {
+    this.props.navigation.setParams({
+      logoutUser: this.logoutUser
+    });
+
     try {
       await this.currentUser.subscribeToRoomMultipart({
         roomId: this.roomID,
@@ -162,6 +179,33 @@ class Chat extends Component {
     } catch (sendMessageError) {
       console.log("error sending message: ", sendMessageError);
     }
+  }
+
+
+  logoutUser = async () => {
+    SInfo.deleteItem("accessToken", {});
+    SInfo.deleteItem("refreshToken", {});
+    try {
+      await this.auth0.webAuth.clearSession(); 
+    } catch (clearSessionError) {
+      console.log("error clearing session: ", clearSessionError);
+    }
+    Alert.alert("Logged out", "You are now logged out");
+    this.gotoLoginPage();
+  }
+
+
+  gotoLoginPage = () => {
+    const resetAction = StackActions.reset({
+      index: 0,
+      actions: [
+        NavigationActions.navigate({
+          routeName: "Login"
+        })
+      ]
+    });
+
+    this.props.navigation.dispatch(resetAction);
   }
 
 }
