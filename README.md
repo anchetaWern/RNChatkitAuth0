@@ -1,6 +1,8 @@
 # RNChatkitAuth0
 A sample React Native chat app built with Chatkit which integrates with Auth0 to provide authentication (via social login) functionality.
 
+Tutorial is available at: [https://pusher.com/tutorials/auth0-react-native-chat](https://pusher.com/tutorials/auth0-react-native-chat)
+
 The app has the following features:
 
 - Social login with Facebook or Google.
